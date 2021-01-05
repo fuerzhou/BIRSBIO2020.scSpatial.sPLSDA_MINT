@@ -4,8 +4,8 @@ pkgdown_sha: ~
 articles:
   HOWTO_BUILD_WORKSHOP: HOWTO_BUILD_WORKSHOP.html
   workshop_example: workshop_example.html
-last_built: 2021-01-04T23:50Z
+last_built: 2021-01-05T06:52Z
 urls:
-  reference: https://seandavi.github.io/BuildABiocWorkshop/reference
-  article: https://seandavi.github.io/BuildABiocWorkshop/articles
+  reference: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT//reference
+  article: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT//articles
 
