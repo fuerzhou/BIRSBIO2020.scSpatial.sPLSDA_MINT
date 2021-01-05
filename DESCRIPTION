@@ -26,4 +26,4 @@ Imports: matrixStats,
 URL: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT/
 BugReports: https://github.com/fuerzhou/BIRSBIO2020.scSpatial.sPLS-DA-MINT/issues/new
 VignetteBuilder: knitr
-DockerImage: spatial_splsda_min
+DockerImage: spatial_splsda_mint
