@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   HOWTO_BUILD_WORKSHOP: HOWTO_BUILD_WORKSHOP.html
   workshop_example: workshop_example.html
-last_built: 2021-01-05T06:52Z
+last_built: 2021-01-05T08:42Z
 urls:
   reference: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT//reference
   article: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT//articles
