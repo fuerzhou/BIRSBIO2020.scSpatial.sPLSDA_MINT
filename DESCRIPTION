@@ -21,7 +21,7 @@ Imports: matrixStats,
          pdist,
          spaa,
          rstudioapi
-URL: https://seandavi.github.io/BuildABiocWorkshop/
+URL: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT/
 BugReports: https://github.com/seandavi/BuildABiocWorkshop/issues/new/choose
 VignetteBuilder: knitr
 DockerImage: seandavi/buildabiocworkshop:latest
