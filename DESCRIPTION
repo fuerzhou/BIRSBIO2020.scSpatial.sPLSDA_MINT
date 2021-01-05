@@ -20,7 +20,9 @@ Suggests:
     rmarkdown,
     pkgdown
 Imports: matrixStats, 
-         mixOmics
+         mixOmics,
+         preprocessCore,
+         dplyr
 URL: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT/
 BugReports: https://github.com/fuerzhou/BIRSBIO2020.scSpatial.sPLS-DA-MINT/issues/new
 VignetteBuilder: knitr
