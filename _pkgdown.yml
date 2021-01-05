@@ -1,4 +1,4 @@
-url: https://seandavi.github.io/BuildABiocWorkshop
+url: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT/
 
 template:
   params:
@@ -6,7 +6,7 @@ template:
     #ganalytics: UA-99999999-9
 
 home:
-  title: "BuildABiocWorkshop"
+  title: "BIRSBIO2020.scSpatial.sPLS-DA_MINT"
   type: inverse
 
 
