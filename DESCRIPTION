@@ -1,4 +1,4 @@
-Package: BIRSBIO2020.scSpatial.sPLSDA_MINT
+Package: BIRSBIO2020.scSpatial.sPLSDAMINT
 Title: scSpatial challenge - Integration of scRNA and seqFISH data by sPLS-DA and MINT model
 Version: 0.9.0
 Authors@R: 
