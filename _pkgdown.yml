@@ -1,4 +1,4 @@
-url: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT/
+url: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLSDA_MINT/
 
 template:
   params:
@@ -6,13 +6,13 @@ template:
     #ganalytics: UA-99999999-9
 
 home:
-  title: "BIRSBIO2020.scSpatial.sPLS-DA_MINT"
+  title: "BIRSBIO2020.scSpatial.sPLSDA_MINT"
   type: inverse
 
 
 navbar:
   right:
    - icon: fa-github
-     href: https://github.com/fuerzhou/BIRSBIO2020.scSpatial.sPLS-DA-MINT
+     href: https://github.com/fuerzhou/BIRSBIO2020.scSpatial.sPLSDA_MINT
      
 
