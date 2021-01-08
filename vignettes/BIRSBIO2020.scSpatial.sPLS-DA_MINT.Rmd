@@ -56,20 +56,20 @@ First import the data, including the training data (`scRNA`), the training label
 
 ```{r}
 ##### import the data #####
-scRNA1 = read.delim("tasic_training_b2.txt",header = FALSE, sep ='\t') 
+scRNA1 = read.delim("data/tasic_training_b2.txt",header = FALSE, sep ='\t') 
 scRNA <- scRNA1[,-1]
 rownames(scRNA) <- scRNA1[,1]
 scRNA = data.frame(t(scRNA))
 rownames(scRNA) <- paste(rep("scRNA",dim(scRNA)[1]),1:dim(scRNA)[1],sep = "_")
   
-seqFISH1 = read.delim("seqfish_cortex_b2_testing.txt",header = FALSE, sep ='\t') 
+seqFISH1 = read.delim("data/seqfish_cortex_b2_testing.txt",header = FALSE, sep ='\t') 
 seqFISH <- seqFISH1[,-1]
 rownames(seqFISH) <- seqFISH1[,1]
 seqFISH = data.frame(t(seqFISH))
 rownames(seqFISH) <- paste(rep("seqFISH",dim(seqFISH)[1]),1:dim(seqFISH)[1],sep = "_")
 
-scRNA_label = read.table("tasic_labels.tsv", sep = "\t")[,1]
-seqFISH_label = read.table("seqfish_labels.tsv", sep = "\t")[,3]
+scRNA_label = read.table("data/tasic_labels.tsv", sep = "\t")[,1]
+seqFISH_label = read.table("data/seqfish_labels.tsv", sep = "\t")[,3]
 ```
 
 `scRNA` is from Taisc et el. 2016. It contains the gene expression level of 1723 cells with 113 genes. 
