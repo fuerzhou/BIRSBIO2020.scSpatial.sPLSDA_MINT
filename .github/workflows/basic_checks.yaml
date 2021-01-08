@@ -2,7 +2,7 @@ on: [push, pull_request]
 
 env:
   cache-version: v1
-  repo-name: spatial_splsda_mint
+  repo-name: fuerzhou/spatial_splsda_mint
 
 jobs:
   job1:
