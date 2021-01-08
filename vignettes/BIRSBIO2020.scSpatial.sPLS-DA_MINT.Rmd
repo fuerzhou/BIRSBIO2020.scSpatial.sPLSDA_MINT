@@ -243,40 +243,6 @@ com_qt_scRNA = rbind(com_qt_scRNA_Astro, com_qt_scRNA_Endo, com_qt_scRNA_GABA, c
 dim(com_qt_scRNA)
 ```
 
-# Train an sPLS-DA model 
-
-Sparse PLS discriminant analysis (sPLS-DA) is a supervised machine learning algorithm (Lê Cao et al. 2011). Its performance in public microarray and SNP data sets is similar to other algorithms and it's very efficient. The function is available under `mixOmics` package.
-
-Train the sPLS-DA model on preprocessed scRNA data. First tune the number of components.
-
-```{r,fig.height = 3,fig.width = 6}
-#load('com_qt_tune-SPLSDA.RData')
-# build the model
-com_qt_splsda = splsda(com_qt_scRNA, com_qt_scRNA_label, ncomp = 10)
-# hyperparameter tuning
-com_qt_perf.splsda <- perf(com_qt_splsda, validation = "Mfold", folds = 5, nrepeat = 8)
-plot(com_qt_perf.splsda, overlay = 'measure')
-n_comp <- 6
-error_rate <- com_qt_perf.splsda$error.rate$BER[n_comp,"max.dist"]
-```
-
-The error rate curve for tuning the number of components shows that the elbow is at comp 6, and at comp 6 **max distance** has the lowest error rate `r error_rate`. It's worth noting that after oversampling, the balanced error rate (BER) is similar to overall error rate. I still use BER since the numbers of each class are still different.
-
-Then, tune the number of genes of each compnent. Use **max distance** as the distance method. 
-
-```{r,fig.height = 3, fig.width = 5}
-list.keepX <- c(1:10, seq(20, 100, 5))
-com_qt_splsda.tune <- tune.splsda(com_qt_scRNA, com_qt_scRNA_label, ncomp = 6, validation = 'Mfold', folds = 5, dist = 'max.dist',progressBar = T  , test.keepX = list.keepX, nrepeat = 8)
-
-plot(com_qt_splsda.tune, optimal = TRUE, sd = TRUE)
-#save(com_qt_splsda, com_qt_perf.splsda, com_qt_splsda.tune, file = 'com_qt_tune-SPLSDA.RData')
-com_qt_splsda.tune$choice.keepX
-keepX <- com_qt_splsda.tune$choice.keepX
-com_qt_splsda.tune$error.rate[27,6]
-error_rate <- com_qt_splsda.tune$error.rate[27,6]
-```
-
-The number of selected genes in each component is `r keepX`. The BER (balanced error rate, max distance) is `r error_rate`.
 
 
 
