@@ -1,4 +1,4 @@
-Package: BIRSBIO2020.scSpatial.sPLSDAMINT
+Package: BIRSBIO2020.scSpatial.sPLSDA_MINT
 Title: scSpatial challenge - Integration of scRNA and seqFISH data by sPLS-DA and MINT model
 Version: 0.9.0
 Authors@R: 
@@ -23,7 +23,7 @@ Imports: matrixStats,
          mixOmics,
          preprocessCore,
          dplyr
-URL: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT/
-BugReports: https://github.com/fuerzhou/BIRSBIO2020.scSpatial.sPLS-DA-MINT/issues/new
+URL: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLSDA_MINT/
+BugReports: https://github.com/fuerzhou/BIRSBIO2020.scSpatial.sPLSDA_MINT/issues/new
 VignetteBuilder: knitr
 DockerImage: spatial_splsda_mint
