@@ -2,9 +2,8 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  HOWTO_BUILD_WORKSHOP: HOWTO_BUILD_WORKSHOP.html
-  workshop_example: workshop_example.html
-last_built: 2021-01-07T18:41Z
+  BIRSBIO2020.scSpatial.sPLS-DA_MINT: BIRSBIO2020.scSpatial.sPLS-DA_MINT.html
+last_built: 2021-01-08T05:03Z
 urls:
   reference: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT//reference
   article: https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLS-DA-MINT//articles
