@@ -7,7 +7,7 @@ env:
 jobs:
   job1:
     runs-on: ubuntu-latest
-    container: bioconductor/bioconductor_docker:devel
+    container: bioconductor/bioconductor_docker:RELEASE_3_12
     steps:
       - uses: actions/checkout@v1
 
@@ -34,15 +34,7 @@ jobs:
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
-      - uses: docker/build-push-action@v1
-        with:
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          # Use the environment variable on first few lines to set repo name--just centralizes changes
-          repository: ${{ env.repo-name }}
-          tag_with_ref: true
-          tag_with_sha: true
-          tags: latest
+
       - name: Install dependencies
         run: |
           options(repos = c(CRAN = "https://cran.r-project.org"))
@@ -73,4 +65,12 @@ jobs:
           BRANCH: gh-pages # The branch the action should deploy to.
           FOLDER: docs # The folder the action should deploy.
 
-
+      - uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          # Use the environment variable on first few lines to set repo name--just centralizes changes
+          repository: ${{ env.repo-name }}
+          tag_with_ref: true
+          tag_with_sha: true
+          tags: latest
