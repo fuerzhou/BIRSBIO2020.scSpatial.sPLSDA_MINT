@@ -6,71 +6,91 @@ env:
 
 jobs:
   job1:
-    runs-on: ubuntu-latest
-    container: bioconductor/bioconductor_docker:RELEASE_3_12
-    steps:
-      - uses: actions/checkout@v1
+   runs-on: ${{ matrix.config.os }}
+   container: ${{ matrix.config.image }}
+   name: ${{ matrix.config.os }} (${{ matrix.config.r }} - ${{ matrix.config.bioc }} - ${{ matrix.config.image }})
 
-      - name: Query dependencies and update old packages
-        run: |
-          BiocManager::install(ask=FALSE)
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-        shell: Rscript {0}
-        
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v1
-        with:
-          path: /usr/local/lib/R/site-library
-          key: ${{ env.cache-version }}-${{ runner.os }}-r-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-r-
-
-      # This lets us augment with additional dependencies
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        env:
-          RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
-        run: |
-          Rscript -e "remotes::install_github('r-hub/sysreqs')"
-          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
-          sudo -s eval "$sysreqs"
-
-      - name: Install dependencies
-        run: |
-          options(repos = c(CRAN = "https://cran.r-project.org"))
-          BiocManager::repositories()
-          remotes::install_deps(dependencies = TRUE, repos = BiocManager::repositories())
-          remotes::install_cran("rcmdcheck")
-        shell: Rscript {0}
-
-      - name: Check
-        env:
-          _R_CHECK_CRAN_INCOMING_REMOTE_: false
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "error", check_dir = "check")
-        shell: Rscript {0}
-      
-
-      - name: Build pkgdown
-        run: |
-           PATH=$PATH:$HOME/bin/ Rscript -e 'pkgdown::build_site(".")'
-      # deploy needs rsync? Seems so.
-      - name: Install deploy dependencies
-        run: |
-          apt-get update
-          apt-get -y install rsync
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: docs # The folder the action should deploy.
-
-      - uses: docker/build-push-action@v1
-        with:
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          # Use the environment variable on first few lines to set repo name--just centralizes changes
-          repository: ${{ env.repo-name }}
-          tag_with_ref: true
-          tag_with_sha: true
-          tags: latest
+   strategy:
+     fail-fast: false
+     matrix:
+       config:
+         # - { os: windows-latest, r: 'release', bioc: 'devel'}
+         # - { os: macOS-latest, r: 'release', bioc: '3.12'}
+          - { os: ubuntu-latest, r: 'release', bioc: '3.12'}
+         # - { os: ubuntu-latest, r: 'release', image: 'bioconductor/bioconductor_docker:devel'}
+   steps:
+     - name: Check out repo ⬇️
+       uses: actions/checkout@v2
+     - name: Set up R ▶️
+       uses: r-lib/actions/setup-r@master
+       if: matrix.config.image == null
+       with:
+         r-version: ${{ matrix.config.r }}
+     - name: Install remotes 🔭
+       run: |
+         install.packages('remotes')
+       shell: Rscript {0}
+     - name: Set BiocManager version 📆
+       if: matrix.config.image == null
+       run: |
+         install.packages('BiocManager')
+         BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE)
+       shell: Rscript {0}
+     - name: Query dependencies and update old packages
+       run: |
+         BiocManager::install(ask=FALSE)
+         saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+       shell: Rscript {0}
+       
+     - name: Cache R packages
+       if: runner.os != 'Windows'
+       uses: actions/cache@v1
+       with:
+         path: /usr/local/lib/R/site-library
+         key: ${{ env.cache-version }}-${{ runner.os }}-r-${{ hashFiles('.github/depends.Rds') }}
+         restore-keys: ${{ env.cache-version }}-${{ runner.os }}-r-
+     # This lets us augment with additional dependencies
+     - name: Install system dependencies
+       if: runner.os == 'Linux'
+       env:
+         RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
+       run: |
+         Rscript -e "remotes::install_github('r-hub/sysreqs')"
+         sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
+         sudo -s eval "$sysreqs"
+     - name: Install dependencies
+       run: |
+         options(repos = c(CRAN = "https://cran.r-project.org"))
+         BiocManager::repositories()
+         remotes::install_deps(dependencies = TRUE, repos = BiocManager::repositories())
+         remotes::install_cran("rcmdcheck")
+       shell: Rscript {0}
+     - name: Check
+       env:
+         _R_CHECK_CRAN_INCOMING_REMOTE_: false
+       run: rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "error", check_dir = "check")
+       shell: Rscript {0}
+     
+     - name: Build pkgdown
+       run: |
+          PATH=$PATH:$HOME/bin/ Rscript -e 'pkgdown::build_site(".")'
+     # deploy needs rsync? Seems so.
+     - name: Install deploy dependencies
+       run: |
+         apt-get update
+         apt-get -y install rsync
+     - name: Deploy 🚀
+       uses: JamesIves/github-pages-deploy-action@releases/v3
+       with:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         BRANCH: gh-pages # The branch the action should deploy to.
+         FOLDER: docs # The folder the action should deploy.
+     - uses: docker/build-push-action@v1
+       with:
+         username: ${{ secrets.USERNAME }}
+         password: ${{ secrets.PASSWORD }}
+         # Use the environment variable on first few lines to set repo name--just centralizes changes
+         repository: ${{ env.repo-name }}
+         tag_with_ref: true
+         tag_with_sha: true
+         tags: latest 
