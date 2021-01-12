@@ -77,8 +77,8 @@ jobs:
      # deploy needs rsync? Seems so.
      - name: Install deploy dependencies
        run: |
-         apt-get update
-         apt-get -y install rsync
+         sudo apt-get update
+         sudo apt-get -y install rsync
      - name: Deploy 🚀
        uses: JamesIves/github-pages-deploy-action@releases/v3
        with:
