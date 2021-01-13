@@ -1,4 +1,5 @@
 **Background**
+
 Tasic et al. (2016) used scRNA sequencing to explore the extent of cell types of mouse primal visual cortex. In the study, 1723 high-quality cells with thousands of genes in primal visual cortex in male adult mice were sequenced on a single cell resolution for cell classification. This study identified 49 cell types, including 23 GABAergic, 19 glutamatergic and 7 non-neural types in the 1723 cells.
 
 The cell classification result from Tasic et al. (2016) was used by Zhu et al. (2018) to design a study to distinguish the difference between intrinsic and extrinsic effect on gene expression. Intrinsic effect means the regulatory gene network, while extrinsic means the cellular microenvironment. The study was conducted by combining scRNA sequencing data and smFISH data (single-molecule fluorescence in situ hybridization). The former one has high molecular resolution of transcriptomics (thousands of genes) without spatial information, while the latter keeps the spatial information but loses the high resolution (only a few hundred genes).
