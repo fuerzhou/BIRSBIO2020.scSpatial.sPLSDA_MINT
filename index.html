@@ -78,59 +78,25 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="buildabiocworkshop" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#buildabiocworkshop" class="anchor"></a>BuildABiocWorkshop</h1></div>
-<p>This package is a template for building a Bioconductor workshop. The package includes Github actions to:</p>
-<ol>
-<li>Set up bioconductor/bioconductor_docker:devel on Github resources</li>
-<li>Install package dependencies for your package (based on the <code>DESCRIPTION</code> file)</li>
-<li>Run <code><a href="https://rdrr.io/pkg/rcmdcheck/man/rcmdcheck.html">rcmdcheck::rcmdcheck</a></code>
-</li>
-<li>Build a pkgdown website and push it to github pages</li>
-<li>Build a docker image with the installed package and dependencies</li>
-</ol>
-<div id="responsibilities" class="section level2">
-<h2 class="hasAnchor">
-<a href="#responsibilities" class="anchor"></a>Responsibilities</h2>
-<p>This year, package authors will be primarily responsible for:</p>
-<ol>
-<li>Creating a landing site of their choosing for their workshops (a website). This website should be listed in the <code>DESCRIPTION</code> file as the <code>URL</code>.</li>
-<li>Creating a docker account and image that will contain workshop materials and the installed packages necessary to run those materials. The name of the resulting docker image, including “tag” if desired, should be listed in a non-standard tag, <code>DockerImage:</code> in the <code>DESCRIPTION</code> file.</li>
-</ol>
-<p>Both of those tasks can be accomplished using the Github actions included in this template package. The vignette accompanying this package describes how to accomplish both of these tasks.</p>
-</div>
-<div id="details" class="section level2">
-<h2 class="hasAnchor">
-<a href="#details" class="anchor"></a>Details</h2>
-<p>For detailed instructions, see the <code>How to build a workshop</code> article/vignette.</p>
-</div>
-<div id="results-of-successful-deployment" class="section level2">
-<h2 class="hasAnchor">
-<a href="#results-of-successful-deployment" class="anchor"></a>Results of successful deployment</h2>
+
+<p><strong>Background</strong></p>
+<p>Tasic et al. (2016) used scRNA sequencing to explore the extent of cell types of mouse primal visual cortex. In the study, 1723 high-quality cells with thousands of genes in primal visual cortex in male adult mice were sequenced on a single cell resolution for cell classification. This study identified 49 cell types, including 23 GABAergic, 19 glutamatergic and 7 non-neural types in the 1723 cells.</p>
+<p>The cell classification result from Tasic et al. (2016) was used by Zhu et al. (2018) to design a study to distinguish the difference between intrinsic and extrinsic effect on gene expression. Intrinsic effect means the regulatory gene network, while extrinsic means the cellular microenvironment. The study was conducted by combining scRNA sequencing data and smFISH data (single-molecule fluorescence in situ hybridization). The former one has high molecular resolution of transcriptomics (thousands of genes) without spatial information, while the latter keeps the spatial information but loses the high resolution (only a few hundred genes).</p>
+<p>Zhu et al. (2018) mapped the sRNA sequencing data to the seqFISH data to enhance the molecular resolution of the cells using SVM (support vector machine). The model was trained to identify the major cell type difference by training on scRNA data of 8 groups, GABAergic and Glutamatergic are the major neuron types, and other non-neuronal types, including Astrocytes, Mndothelial cells, microcytes, and three types of Oligocytes. The selected features (genes) were the top 43 differentially expressed (DE) genes in the identified 113 genes. The classification result was FURTHER validated by different evidence like cell type specific staining and previously reported marker genes.</p>
+<p><strong>Task</strong></p>
+<p>Now, given a dataset of gene expression levels of 1723 cells and 113 genes and the cell types (from Tasic et al. 2016), our task is to predict the cells provided by Zhu et al. (2018), 1597 cells with 113 genes.</p>
+<p><strong>Outline of analysis</strong></p>
+<p>We will adopt a semi-supervised approach to classify the cells of seqFISH data.</p>
 <ul>
-<li>A working docker image that contains the installed package and dependencies.</li>
-<li>An up-to-date <code>pkgdown</code> website at <a href="https://YOURUSERNAME.github.io/YOURREPOSITORYNAME/" class="uri">https://YOURUSERNAME.github.io/YOURREPOSITORYNAME/</a>
-</li>
-<li>Docker image will be tagged with <code>latest</code>, <code>sha-XXXXXX</code> where <code>XXXXXX</code> is the hash of the current <code>master</code> commit, and <code>master</code>.</li>
+<li>Train an sPLS-DA model on scRNA dataset.</li>
+<li>Select genes by limiting the number of genes of “keepX” argument of each component during hyperparameter tuning.</li>
+<li>Predict seqFISH data using the trained sPLS-DA model.</li>
+<li>The predictions with high probabilities by the sPLS-DA model will be combined to the original training data for further training.</li>
+<li>Train a MINT model on the combined training dataset and predict the rest cells of seqFISH data.</li>
+<li>Identify the marker genes by examining the loading factors.</li>
 </ul>
-</div>
-<div id="to-use-the-resulting-image" class="section level2">
-<h2 class="hasAnchor">
-<a href="#to-use-the-resulting-image" class="anchor"></a>To use the resulting image:</h2>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">docker</span> run -e PASSWORD=<span class="op">&lt;</span>choose_a_password_for_rstudio<span class="op">&gt;</span> -p 8787:8787 YOURDOCKERIMAGENAME</code></pre></div>
-<p>Once running, navigate to <a href="https://localhost:8787/" class="uri">https://localhost:8787/</a> and then login with <code>rstudio</code>:<code>yourchosenpassword</code>.</p>
-<p>To try with <strong>this</strong> repository docker image:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">docker</span> run -e PASSWORD=abc -p 8787:8787 seandavi/buildabiocworkshop2020</code></pre></div>
-<p><em>NOTE</em>: Running docker that uses the password in plain text like above exposes the password to others in a multi-user system (like a shared workstation or compute node). In practice, consider using an environment variable instead of plain text to pass along passwords and other secrets in docker command lines.</p>
-</div>
-<div id="whatcha-get" class="section level2">
-<h2 class="hasAnchor">
-<a href="#whatcha-get" class="anchor"></a>Whatcha get</h2>
-<p><a href="https://seandavi.github.io/BuildABiocWorkshop" class="uri">https://seandavi.github.io/BuildABiocWorkshop</a></p>
-<p><img src="https://github.com/seandavi/BuildABiocWorkshop/raw/master/inst/images/dockerhub_result.png" alt="dockerhub"></p>
-</div>
-</div>
+<p>This semi-supervised method can borrow the information from the seqFISH data and make the model customised. The combination of the data will be used to train a MINT.sPLS-DA model. MINT (Multivariate INTegrative method) (Rohart et al. 2017) is robust for integrating data from different sources regardless of the batch effect. The top discriminative genes identified from the model will be validated using previous literature as evidence. The determination of the minimal number of genes will be done by restricting the values of keepX and the performance will be monitored by balanced error rate (BER). BER is the average of the proportion of wrong classifications in each class. The lower the BER, the more accurate the model is.</p>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
