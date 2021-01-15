@@ -116,7 +116,7 @@
 <div id="data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#data" class="anchor"></a>Data</h2>
-<p>First import the data, including the training data (<code>scRNA</code>), the training labels (<code>scRNA_label</code>), the test data (<code>seqFISH</code>) and the predicted test labels by Zhu's paper (<code>seqFISH_label</code>).</p>
+<p>First we import the data, including the training data (<code>scRNA</code>), the training labels (<code>scRNA_label</code>), the test data (<code>seqFISH</code>) and the predicted test labels by Zhu's paper (<code>seqFISH_label</code>).</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">##### import the data #####</span>
 <span class="va">scRNA1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.delim</a></span><span class="op">(</span><span class="st">"data/tasic_training_b2.txt"</span>,header <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span><span class="st">'\t'</span><span class="op">)</span> 
@@ -215,7 +215,7 @@
 <span class="op">}</span></code></pre></div>
 <p><img src="hist_fish1.png"><img src="hist_fish2.png"></p>
 <p>The histograms show that the features (genes) are of the same scale and the distributions are almost normal. It means that there's no need for further feature normalisation.</p>
-<p>Now check the gene expression distribution of the 40 random samples in each dataset.</p>
+<p>Now we check the gene expression distribution of the 40 random samples in each dataset.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 <span class="va">random_scRNA</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n_scRNA</span>, <span class="fl">40</span>, replace<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span>
@@ -234,7 +234,7 @@
 <p>Figure 1. Gene expression distribution of each sample in scRNA data and seqFISH data.</p>
 <p>The boxplots show that the the distributions of scRNA data have some sample-wise variation, while seqFISH samples have more consistent distributions.</p>
 <p>Some other analyses in the hackalthon did quantile normalisation for paired genes to try to eliminate the differences across datasets. However, we proposed to do <strong>quantile normalisation</strong> on <strong>samples</strong> because although different samples have different differentially expressed (DE) genes, the majority of the genes should express at the same level. That means whichever genes are DE, the mean and quantile of each sample should be of the similar level.</p>
-<p>Therefore, I will unify the quantile normalisation of samples between the datasets to maximumly eliminate the differences between the datasets. The normalisation was done by <code>normalize.quantiles</code> function from <code>preprocessCore</code> package.</p>
+<p>Therefore, We unify the quantile normalisation of samples between the datasets to maximumly eliminate the differences between the datasets. The normalisation is done by <code>normalize.quantiles</code> function from <code>preprocessCore</code> package.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## QUANTILE normalisation on all the samples</span>
 <span class="va">all_data</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">scRNA</span>,<span class="va">seqFISH</span><span class="op">)</span>
@@ -262,7 +262,7 @@
 ##    Oligodendrocyte.2    Oligodendrocyte.3 
 ##                    6                   31</code></pre>
 <p>The cells of each class are heavily imbalanced in the training data. There is not enough training data for the minor group and the major groups will dominate the classification. Then the model will not have enough power to classify minor groups. To solve the problem, I used two strategies. First, I combined the three subgroups of Oligodendroctyes into one group. This is because in the Tasic paper, some cells were not identified as "core" cells for any Oligo but identified as "intermediate" cells and these three types were identified as close to each other. Also, Oligo.2 has too few samples. The second strategy is to oversample the minor groups.</p>
-<p>First combine the three Oligo subgroups.</p>
+<p>First we combine the three Oligo subgroups.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">scRNA_relabel</span> <span class="op">=</span> <span class="va">scRNA_label</span>
 <span class="va">scRNA_relabel</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">scRNA_relabel</span> <span class="op">==</span> <span class="st">"Oligodendrocyte.1"</span><span class="op">)</span>,
@@ -284,7 +284,7 @@
 <span class="va">qt_scRNA_O2</span> <span class="op">=</span> <span class="va">qt_scRNA</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">scRNA_label</span> <span class="op">==</span> <span class="st">"Oligodendrocyte.2"</span><span class="op">)</span>,<span class="op">]</span>
 <span class="va">qt_scRNA_O3</span> <span class="op">=</span> <span class="va">qt_scRNA</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">scRNA_label</span> <span class="op">==</span> <span class="st">"Oligodendrocyte.3"</span><span class="op">)</span>,<span class="op">]</span>
 <span class="va">qt_scRNA_Oligo</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">qt_scRNA_O1</span>, <span class="va">qt_scRNA_O2</span>,<span class="va">qt_scRNA_O3</span><span class="op">)</span></code></pre></div>
-<p>Now, oversample the minor groups.</p>
+<p>Now, we oversample the minor groups.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">com_qt_scRNA_label</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"Astrocyte"</span>, <span class="fl">43</span><span class="op">*</span><span class="fl">15</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"Endothelial Cell"</span>,<span class="fl">29</span><span class="op">*</span><span class="fl">25</span><span class="op">)</span>,
                        <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"GABA-ergic Neuron"</span>,<span class="fl">761</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"Glutamatergic Neuron"</span>, <span class="fl">812</span><span class="op">)</span>, 
@@ -321,7 +321,7 @@
 <h1 class="hasAnchor">
 <a href="#spls-da-model-training" class="anchor"></a>sPLS-DA model training</h1>
 <p>Sparse PLS discriminant analysis (sPLS-DA) is a supervised machine learning algorithm (Lê Cao et al. 2011). Its performance in public microarray and SNP data sets is similar to other algorithms and it's very efficient. The function is available in <code>mixOmics</code> package.</p>
-<p>Train the sPLS-DA model on preprocessed scRNA data. First tune the number of components.</p>
+<p>Now let's train the sPLS-DA model on preprocessed scRNA data. First we tune the number of components.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># The cross validation is stochastic so need to set seed for reproducibility</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">0610</span><span class="op">)</span>
@@ -336,7 +336,7 @@
 <code class="sourceCode R"><span class="va">n_comp</span> <span class="op">&lt;-</span> <span class="fl">6</span>  <span class="co"># 6 is the elbow in the error rate plot</span>
 <span class="va">error_rate</span> <span class="op">&lt;-</span> <span class="va">com_qt_perf.splsda</span><span class="op">$</span><span class="va">error.rate</span><span class="op">$</span><span class="va">BER</span><span class="op">[</span><span class="va">n_comp</span>,<span class="st">"max.dist"</span><span class="op">]</span></code></pre></div>
 <p>The error rate curve for tuning the number of components shows that the elbow is at comp 6, and at comp 6 <strong>max distance</strong> has the lowest error rate 0.0517155. Note that after oversampling, the balanced error rate (BER) is similar to overall error rate. We still use BER to evaluate the performance since the numbers of each class are still different.</p>
-<p>Then, tune the number of genes of each compnent. Use <strong>max distance</strong> as the distance method. (You can skip the next chunk and directly tune the model with fewer genes on each component using the code in "gene selection" section.)</p>
+<p>Then, we tune the number of genes of each compnent. We use <strong>max distance</strong> as the distance method. (You can skip the next chunk and directly tune the model with fewer genes on each component using the code in "gene selection" section.)</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># tune keepX (the number of genes selected in each component)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">0610</span><span class="op">)</span>
@@ -363,7 +363,7 @@
 <div id="gene-selection" class="section level1">
 <h1 class="hasAnchor">
 <a href="#gene-selection" class="anchor"></a>Gene selection</h1>
-<p>We can try using fewer genes for each component. Restrict the number of genes of each component within 5.</p>
+<p>We can try using fewer genes for each component. Hence we restrict the number of genes of each component within 5.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># tune keepX</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">0610</span><span class="op">)</span>
@@ -389,7 +389,7 @@
 ##           0.00000000           0.07413793           0.18971748 
 ## Glutamatergic Neuron            Microglia      Oligodendrocyte 
 ##           0.11961207           0.00000000           0.22544643</code></pre>
-<p>The error rate (training set) of all the classes are low. The training error rate of Astro and Micro are 0.0. This may be expalined by the presence of evidently representative marker genes in these two types.</p>
+<p>The error rate (training set) of all the classes are low. The training error rate of Astro and Micro are 0.0. This may be explained by the presence of evidently representative marker genes in these two types.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># this is the final sPLS-DA model (using the tuned hyperparameters)</span>
 <span class="va">splsda</span> <span class="op">&lt;-</span> <span class="fu">mixOmics</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/mixOmics/man/splsda.html">splsda</a></span>
@@ -409,7 +409,7 @@
 <div id="select-the-predictions-with-high-probability" class="section level1">
 <h1 class="hasAnchor">
 <a href="#select-the-predictions-with-high-probability" class="anchor"></a>Select the predictions with high probability</h1>
-<p>The predictions of the cell types with probability higher than 50% are considered as confident classifications. Keep the cells that have prediction probability over 50%.</p>
+<p>The predictions of the cell types with probability higher than 50% are considered as confident classifications. Hence we keep the cells that have prediction probability over 50%.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pred_prob</span> <span class="op">=</span> <span class="va">final_sPLSDA.predict</span><span class="op">[[</span><span class="st">"predict"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,,<span class="va">n_comp</span><span class="op">]</span>
 <span class="va">low_prob</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="fu">rowMaxs</span><span class="op">(</span><span class="va">pred_prob</span><span class="op">)</span><span class="op">&lt;</span><span class="fl">0.5</span><span class="op">)</span>
@@ -430,7 +430,7 @@
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">n_low_prob</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">low_prob</span><span class="op">)</span></code></pre></div>
 <p>403 cells are with low prediction prob (&lt; 0.5).</p>
-<p>Compare the sPLSDA predictions with Zhu paper.</p>
+<p>We compare the sPLSDA predictions with Zhu paper.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># my prediction</span>
 <span class="va">predictions</span> <span class="op">=</span> <span class="va">final_sPLSDA.predict</span><span class="op">$</span><span class="va">class</span><span class="op">$</span><span class="va">max.dist</span><span class="op">[</span>, <span class="va">n_comp</span><span class="op">]</span>
@@ -447,7 +447,7 @@
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">converge</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">seqFISH_relabel</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">predictions</span><span class="op">)</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">predictions</span><span class="op">)</span></code></pre></div>
 <p>71% of the final predictions of splsda converge with Zhu paper.</p>
-<p>The above model used max distance when tuning the hyperparameters. I also tuned the model with other distances. The code for tuning is shown below.</p>
+<p>The above model used max distance when tuning the hyperparameters. We also tuned the model with other distances. The code for tuning is shown below.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#centroids.tune &lt;- tune.splsda(com_qt_scRNA, com_qt_scRNA_label, ncomp = 6, validation = 'Mfold',</span>
 <span class="co">#                              folds = 5, dist = 'centroids.dist',progressBar = F, </span>
@@ -460,7 +460,7 @@
 <span class="co">#mahalanobis.tune$choice.keepX</span>
 <span class="co">#mahalanobis.tune$error.rate[5,6]</span></code></pre></div>
 <p>You can use these two models to predict the seqFISH data simply by modifying the code from line 294. The results will show that the convergence with Zhu's paper of the two models is the same to the model with max distance.</p>
-<p>Now calculate the total number of genes selected in the sPLS-DA model.</p>
+<p>Now we calculate the total number of genes selected in the sPLS-DA model.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># calculate the number of selected features</span>
 <span class="va">features</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">)</span>
@@ -473,7 +473,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">features</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 24</code></pre>
 <p>With only 24 genes the model is able to accurately classify the training data and make the predictions converge with Zhu's paper up to 0.7069505.</p>
-<p>The following figures are the sample plots of the sPLS-DA model. THe plots are also overlaid with the predicted cell types of seqFISH data.</p>
+<p>The following figures are the sample plots of the sPLS-DA model. The plots are also overlaid with the predicted cell types of seqFISH data.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">##### sampleplots ####</span>
 <span class="co"># extract prediction labels </span>
@@ -510,7 +510,7 @@
 <div id="identification-of-selected-genes" class="section level1">
 <h1 class="hasAnchor">
 <a href="#identification-of-selected-genes" class="anchor"></a>Identification of selected genes</h1>
-<p>Plot the loading factors on each component. It shows how much the genes contribute to the class discrimination of the training data on each component.For example in the following plots, the contribution on Comp 1 shows that gene <strong>gja1</strong> is over expressed in Astrocyte class according to its median value compared to the other cell types.</p>
+<p>Let's plot the loading factors on each component. It shows how much the genes contribute to the class discrimination of the training data on each component.For example in the following plots, the contribution on Comp 1 shows that gene <strong>gja1</strong> is over expressed in Astrocyte class according to its median value compared to the other cell types.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## loading factors for the trained splsda model</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span>
@@ -546,7 +546,7 @@
 <span class="va">pca</span> <span class="op">&lt;-</span> <span class="fu">pca</span><span class="op">(</span><span class="va">X</span>, ncomp <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="fu">plotIndiv</span><span class="op">(</span><span class="va">pca</span>, group <span class="op">=</span> <span class="va">group</span>, legend <span class="op">=</span> <span class="cn">T</span>, ellipse <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
 <p><img src="BIRSBIO2020.scSpatial.sPLS-DA_MINT_files/figure-html/pca-1.png" width="480"></p>
-<p>Combine the "accurate" seqFISH data and scRNA data. The combined data still need oversampling and undersampling due to the imbalance of classes.</p>
+<p>We combine the "accurate" seqFISH data and scRNA data. The combined data still need oversampling and undersampling due to the imbalance of classes.</p>
 <pre><code>## [1] 2917  113</code></pre>
 <pre><code>## [1] 2917</code></pre>
 <pre><code>## [1] 2917</code></pre>
@@ -563,7 +563,7 @@
 ## Glutamatergic Neuron            Microglia      Oligodendrocyte 
 ##                  500                  459                  455</code></pre>
 <pre><code>## [1] 2998</code></pre>
-<p>Train a MINT.sPLSDA model on the combined data.</p>
+<p>We train a MINT.sPLSDA model on the combined data.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">0610</span><span class="op">)</span>
 <span class="va">mint</span> <span class="op">=</span> <span class="fu">mint.splsda</span><span class="op">(</span><span class="va">X</span>, <span class="va">Y</span>, study <span class="op">=</span> <span class="va">study</span>, ncomp <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
@@ -572,7 +572,7 @@
 <span class="va">n_comp</span> <span class="op">=</span> <span class="fl">6</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">perf.mint.splsda</span>, overlay <span class="op">=</span> <span class="st">'measure'</span><span class="op">)</span></code></pre></div>
 <p><img src="BIRSBIO2020.scSpatial.sPLS-DA_MINT_files/figure-html/unnamed-chunk-33-1.png" width="480"></p>
-<p>The error rate curve for tuning the number of components shows that 6 component is enough to reach a low error rate. Now use the number of genes selected by each component. We restrict the number of each component no more than 5.</p>
+<p>The error rate curve for tuning the number of components shows that 6 component is enough to reach a low error rate. Now we use the number of genes selected by each component. We restrict the number of each component no more than 5.</p>
 <div class="sourceCode"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># tune keepX</span>
 <span class="va">list.keepX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>
