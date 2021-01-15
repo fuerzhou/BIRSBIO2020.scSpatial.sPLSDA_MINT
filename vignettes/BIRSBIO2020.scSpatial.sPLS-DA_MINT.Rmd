@@ -51,7 +51,7 @@ This semi-supervised method can borrow the information from the seqFISH data and
 
 ## Data
 
-First import the data, including the training data (`scRNA`), the training labels (`scRNA_label`), the test data (`seqFISH`) and the predicted test labels by Zhu's paper (`seqFISH_label`).
+First we import the data, including the training data (`scRNA`), the training labels (`scRNA_label`), the test data (`seqFISH`) and the predicted test labels by Zhu's paper (`seqFISH_label`).
 
 ```{r}
 ##### import the data #####
@@ -133,7 +133,7 @@ for (i in 1:dim(seqFISH)[2]){
 
 The histograms show that the features (genes) are of the same scale and the distributions are almost normal. It means that there's no need for further feature normalisation.
 
-Now check the gene expression distribution of the 40 random samples in each dataset. 
+Now we check the gene expression distribution of the 40 random samples in each dataset. 
 
 ```{r, fig.height = 3, fig.width=8}
 par(mfrow = c(1,1))
@@ -154,7 +154,7 @@ The boxplots show that the the distributions of scRNA data have some sample-wise
 
 Some other analyses in the hackalthon did quantile normalisation for paired genes to try to eliminate the differences across datasets. However, we proposed to do **quantile normalisation** on **samples** because although different samples have different differentially expressed (DE) genes, the majority of the genes should express at the same level. That means whichever genes are DE, the mean and quantile of each sample should be of the similar level. 
 
-Therefore, I will unify the quantile normalisation of samples between the datasets to maximumly eliminate the differences between the datasets. The normalisation was done by `normalize.quantiles` function from `preprocessCore` package.
+Therefore, We unify the quantile normalisation of samples between the datasets to maximumly eliminate the differences between the datasets. The normalisation is done by `normalize.quantiles` function from `preprocessCore` package.
 
 ```{r,fig.height = 6}
 ## QUANTILE normalisation on all the samples
@@ -195,7 +195,7 @@ table(scRNA_label)
 
 The cells of each class are heavily imbalanced in the training data. There is not enough training data for the minor group and the major groups will dominate the classification. Then the model will not have enough power to classify minor groups. To solve the problem, I used two strategies. First, I combined the three subgroups of Oligodendroctyes into one group. This is because in the Tasic paper, some cells were not identified as "core" cells for any Oligo but identified as "intermediate" cells and these three types were identified as close to each other. Also, Oligo.2 has too few samples. The second strategy is to oversample the minor groups. 
 
-First combine the three Oligo subgroups.
+First we combine the three Oligo subgroups.
 
 ```{r}
 scRNA_relabel = scRNA_label
@@ -217,7 +217,7 @@ qt_scRNA_O3 = qt_scRNA[which(scRNA_label == "Oligodendrocyte.3"),]
 qt_scRNA_Oligo = rbind(qt_scRNA_O1, qt_scRNA_O2,qt_scRNA_O3)
 ```
 
-Now, oversample the minor groups.
+Now, we oversample the minor groups.
 
 ```{r}
 com_qt_scRNA_label = c(rep("Astrocyte", 43*15), rep("Endothelial Cell",29*25),
@@ -258,7 +258,7 @@ dim(com_qt_scRNA)
 
 Sparse PLS discriminant analysis (sPLS-DA) is a supervised machine learning algorithm (Lê Cao et al. 2011). Its performance in public microarray and SNP data sets is similar to other algorithms and it's very efficient. The function is available in `mixOmics` package.
 
-Train the sPLS-DA model on preprocessed scRNA data. First tune the number of components.
+Now let's train the sPLS-DA model on preprocessed scRNA data. First we tune the number of components.
 
 ```{r,fig.height = 3,fig.width = 6}
 # The cross validation is stochastic so need to set seed for reproducibility
@@ -275,7 +275,7 @@ error_rate <- com_qt_perf.splsda$error.rate$BER[n_comp,"max.dist"]
 
 The error rate curve for tuning the number of components shows that the elbow is at comp 6, and at comp 6 **max distance** has the lowest error rate `r error_rate`. Note that after oversampling, the balanced error rate (BER) is similar to overall error rate. We still use BER to evaluate the performance since the numbers of each class are still different.
 
-Then, tune the number of genes of each compnent. Use **max distance** as the distance method. (You can skip the next chunk and directly tune the model with fewer genes on each component using the code in "gene selection" section.)
+Then, we tune the number of genes of each compnent. We use **max distance** as the distance method. (You can skip the next chunk and directly tune the model with fewer genes on each component using the code in "gene selection" section.)
 
 ```{r,fig.height = 3, fig.width = 5}
 # tune keepX (the number of genes selected in each component)
@@ -298,7 +298,7 @@ The number of selected genes in each component is `r keepX`. The BER (balanced e
 
 # Gene selection
 
-We can try using fewer genes for each component. Restrict the number of genes of each component within 5. 
+We can try using fewer genes for each component. Hence we restrict the number of genes of each component within 5. 
 
 ```{r}
 # tune keepX
@@ -320,7 +320,7 @@ The tuned keepX is `r keepX`. The BER (max distance) is `r error_rate`, even low
 select_genes.tune$error.rate.class[,6]
 ```
 
-The error rate (training set) of all the classes are low. The training error rate of Astro and Micro are 0.0. This may be expalined by the presence of evidently representative marker genes in these two types.
+The error rate (training set) of all the classes are low. The training error rate of Astro and Micro are 0.0. This may be explained by the presence of evidently representative marker genes in these two types.
 
 ```{r}
 # this is the final sPLS-DA model (using the tuned hyperparameters)
@@ -336,7 +336,7 @@ table(final_sPLSDA.predict$class$max.dist[, n_comp])
 
 # Select the predictions with high probability
 
-The predictions of the cell types with probability higher than 50% are considered as confident classifications. Keep the cells that have prediction probability over 50%.
+The predictions of the cell types with probability higher than 50% are considered as confident classifications. Hence we keep the cells that have prediction probability over 50%.
 
 ```{r}
 pred_prob = final_sPLSDA.predict[["predict"]][,,n_comp]
@@ -352,7 +352,7 @@ n_low_prob <- length(low_prob)
 ```
 `r n_low_prob` cells are with low prediction prob (< 0.5).
 
-Compare the sPLSDA predictions with Zhu paper.
+We compare the sPLSDA predictions with Zhu paper.
 ```{r}
 # my prediction
 predictions = final_sPLSDA.predict$class$max.dist[, n_comp]
@@ -370,7 +370,7 @@ converge <- sum(seqFISH_relabel == as.character(predictions))/length(predictions
 
 `r round(converge, 2)*100`% of the final predictions of splsda converge with Zhu paper.
 
-The above model used max distance when tuning the hyperparameters. I also tuned the model with other distances. The code for tuning is shown below. 
+The above model used max distance when tuning the hyperparameters. We also tuned the model with other distances. The code for tuning is shown below. 
 
 ```{r}
 #centroids.tune <- tune.splsda(com_qt_scRNA, com_qt_scRNA_label, ncomp = 6, validation = 'Mfold',
@@ -387,7 +387,7 @@ The above model used max distance when tuning the hyperparameters. I also tuned 
 
 You can use these two models to predict the seqFISH data simply by modifying the code from line 294. The results will show that the convergence with Zhu's paper of the two models is the same to the model with max distance. 
 
-Now calculate the total number of genes selected in the sPLS-DA model.
+Now we calculate the total number of genes selected in the sPLS-DA model.
 
 ```{r}
 # calculate the number of selected features
@@ -403,7 +403,7 @@ length(features)
 
 With only 24 genes the model is able to accurately classify the training data and make the predictions converge with Zhu's paper up to `r converge`. 
 
-The following figures are the sample plots of the sPLS-DA model. THe plots are also overlaid with the predicted cell types of seqFISH data. 
+The following figures are the sample plots of the sPLS-DA model. The plots are also overlaid with the predicted cell types of seqFISH data. 
 
 ```{r}
 ##### sampleplots ####
@@ -438,7 +438,7 @@ The codes for sample plots of other components can be adapted from the codes for
 
 # Identification of selected genes
 
-Plot the loading factors on each component. It shows how much the genes contribute to the class discrimination of the training data on each component.For example in the following plots, the contribution on Comp 1 shows that gene **gja1** is over expressed in Astrocyte class according to its median value compared to the other cell types.
+Let's plot the loading factors on each component. It shows how much the genes contribute to the class discrimination of the training data on each component.For example in the following plots, the contribution on Comp 1 shows that gene **gja1** is over expressed in Astrocyte class according to its median value compared to the other cell types.
 
 ```{r, fig.height=4,fig.width = 8}
 ## loading factors for the trained splsda model
@@ -473,7 +473,7 @@ pca <- pca(X, ncomp = 2)
 plotIndiv(pca, group = group, legend = T, ellipse = T)
 ```
 
-Combine the "accurate" seqFISH data and scRNA data. The combined data still need oversampling and undersampling due to the imbalance of classes.
+We combine the "accurate" seqFISH data and scRNA data. The combined data still need oversampling and undersampling due to the imbalance of classes.
 
 ```{r, echo=FALSE}
 seqFISH_data_tobe_predicted = qt_seqFISH[low_prob,]
@@ -518,7 +518,7 @@ table(Y)
 length(Y)
 ```
 
-Train a MINT.sPLSDA model on the combined data.
+We train a MINT.sPLSDA model on the combined data.
 
 ```{r, fig.height = 3, fig.width = 5}
 set.seed(0610)
@@ -529,7 +529,7 @@ n_comp = 6
 plot(perf.mint.splsda, overlay = 'measure')
 ```
 
-The error rate curve for tuning the number of components shows that 6 component is enough to reach a low error rate. Now use the number of genes selected by each component. We restrict the number of each component no more than 5.
+The error rate curve for tuning the number of components shows that 6 component is enough to reach a low error rate. Now we use the number of genes selected by each component. We restrict the number of each component no more than 5.
 
 ```{r, fig.height = 3, fig.width = 6}
 # tune keepX
