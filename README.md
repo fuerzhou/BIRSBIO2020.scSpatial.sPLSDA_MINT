@@ -1,3 +1,6 @@
+**Vignette**
+https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLSDA_MINT/articles/BIRSBIO2020.scSpatial.sPLS-DA_MINT.html
+
 **Background**
 
 Tasic et al. (2016) used scRNA sequencing to explore the extent of cell types of mouse primal visual cortex. In the study, 1723 high-quality cells with thousands of genes in primal visual cortex in male adult mice were sequenced on a single cell resolution for cell classification. This study identified 49 cell types, including 23 GABAergic, 19 glutamatergic and 7 non-neural types in the 1723 cells.
