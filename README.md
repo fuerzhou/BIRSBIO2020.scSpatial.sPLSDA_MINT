@@ -1,4 +1,5 @@
 **Vignette**
+
 https://fuerzhou.github.io/BIRSBIO2020.scSpatial.sPLSDA_MINT/articles/BIRSBIO2020.scSpatial.sPLS-DA_MINT.html
 
 **Background**
