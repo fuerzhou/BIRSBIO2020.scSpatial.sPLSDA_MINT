@@ -27,3 +27,10 @@ We will adopt a semi-supervised approach to classify the cells of seqFISH data.
 
 This semi-supervised method can borrow the information from the seqFISH data and make the model customised. The combination of the data will be used to train a MINT.sPLS-DA model. MINT (Multivariate INTegrative method) (Rohart et al. 2017) is robust for integrating data from different sources regardless of the batch effect. The top discriminative genes identified from the model will be validated using previous literature as evidence. The determination of the minimal number of genes will be done by restricting the values of keepX and the performance will be monitored by balanced error rate (BER). BER is the average of the proportion of wrong classifications in each class. The lower the BER, the more accurate the model is.
 
+
+
+
+
+**Docker file**
+
+https://hub.docker.com/r/fuerzhou/spatial_splsda_mint
